@@ -493,7 +493,7 @@ namespace osu.Game.Screens.Utility
                 showResults();
         }
 
-        private static int mapDifficultyToTargetFrameRate(int difficulty)
+        protected virtual int mapDifficultyToTargetFrameRate(int difficulty)
         {
             switch (difficulty)
             {
