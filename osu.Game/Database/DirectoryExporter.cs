@@ -4,25 +4,24 @@
 using System;
 using System.IO;
 using osu.Framework.Platform;
+using osu.Game.Beatmaps;
 using osu.Game.Extensions;
 
 namespace osu.Game.Database
 {
-    public abstract class DirectoryExporter<TModel>
-        where TModel : class, IHasNamedFiles
+    public class DirectoryBeatmapExporter
     {
+        private readonly Storage tempStorage;
 
-        protected readonly Storage tempStorage;
+        private readonly Storage UserFileStorage;
 
-        protected readonly Storage UserFileStorage;
-
-        protected DirectoryExporter(Storage storage)
+        public DirectoryBeatmapExporter(Storage storage)
         {
             tempStorage = storage.GetStorageForDirectory(@"temp");
             UserFileStorage = storage.GetStorageForDirectory(@"files");
         }
 
-        public void Export(TModel item)
+        public void Export(BeatmapSetInfo item)
         {
             string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
@@ -36,6 +35,18 @@ namespace osu.Game.Database
             }
 
             storage.PresentExternally();
+        }
+
+        public void Import(BeatmapSetInfo item)
+        {
+            string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
+
+            foreach (var f in tempStorage.GetFiles(filename))
+            {
+                using Stream s = tempStorage.GetStream(f);
+                using Stream ns = File.OpenWrite(UserFileStorage.GetFullPath(item.GetPathForFile(f), true));
+                s.CopyTo(ns);
+            }
         }
     }
 }

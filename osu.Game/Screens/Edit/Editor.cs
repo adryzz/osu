@@ -862,15 +862,15 @@ namespace osu.Game.Screens.Edit
         private void editBeatmap()
         {
             Save();
-            dialogOverlay.Push(new ManualBeatmapChangesDialog(() => { }, reimportEditedBeatmap));
-            new DirectoryBeatmapExporter(storage).Export(Beatmap.Value.BeatmapSetInfo);
-        }
+            var ex = new DirectoryBeatmapExporter(storage);
 
-        private void reimportEditedBeatmap()
-        {
-            //TODO: reimport beatmap
-            new DirectoryBeatmapExporter(storage).Import(Beatmap.Value.BeatmapSetInfo);
-            Save();
+            ex.Export(Beatmap.Value.BeatmapSetInfo);
+
+            dialogOverlay.Push(new ManualBeatmapChangesDialog(() => { }, () =>
+            {
+                ex.Import(Beatmap.Value.BeatmapSetInfo);
+                Save();
+            }));
         }
 
         private void updateLastSavedHash()
