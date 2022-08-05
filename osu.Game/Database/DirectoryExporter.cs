@@ -12,9 +12,9 @@ namespace osu.Game.Database
         where TModel : class, IHasNamedFiles
     {
 
-        private readonly Storage tempStorage;
+        protected readonly Storage tempStorage;
 
-        private readonly Storage UserFileStorage;
+        protected readonly Storage UserFileStorage;
 
         protected DirectoryExporter(Storage storage)
         {
