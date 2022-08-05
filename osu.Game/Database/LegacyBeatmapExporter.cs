@@ -17,4 +17,12 @@ namespace osu.Game.Database
         {
         }
     }
+
+    public class DirectoryBeatmapExporter : DirectoryExporter<BeatmapSetInfo>
+    {
+        public DirectoryBeatmapExporter(Storage storage)
+            : base(storage)
+        {
+        }
+    }
 }

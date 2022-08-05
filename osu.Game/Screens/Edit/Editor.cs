@@ -859,6 +859,18 @@ namespace osu.Game.Screens.Edit
             new LegacyBeatmapExporter(storage).Export(Beatmap.Value.BeatmapSetInfo);
         }
 
+        private void editBeatmap()
+        {
+            Save();
+            dialogOverlay.Push(new ManualBeatmapChangesDialog(() => { }, () => reimportEditedBeatmap()));
+            new DirectoryBeatmapExporter(storage).Export(Beatmap.Value.BeatmapSetInfo);
+        }
+
+        private void reimportEditedBeatmap()
+        {
+            //TODO: reimport beatmap
+        }
+
         private void updateLastSavedHash()
         {
             lastSavedHash = changeHandler?.CurrentStateHash;
@@ -873,6 +885,7 @@ namespace osu.Game.Screens.Edit
 
             if (RuntimeInfo.IsDesktop)
                 fileMenuItems.Add(new EditorMenuItem("Export package", MenuItemType.Standard, exportBeatmap));
+                fileMenuItems.Add(new EditorMenuItem("Edit beatmap manually", MenuItemType.Standard, editBeatmap));
 
             fileMenuItems.Add(new EditorMenuItemSpacer());
 
