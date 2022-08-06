@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using osu.Framework.Extensions.EnumExtensions;
 using osu.Framework.Platform;
 using osu.Game.Beatmaps;
@@ -17,14 +18,21 @@ namespace osu.Game.Database
 
         private readonly Storage UserFileStorage;
 
-        private FileSystemWatcher? watcher;
+        private readonly FileSystemWatcher watcher;
 
-        private List<string> filesToRefresh = new List<string>();
+        private readonly List<string> filesToRefresh = new List<string>();
 
         public DirectoryBeatmapExporter(Storage storage)
         {
             tempStorage = storage.GetStorageForDirectory(@"temp");
             UserFileStorage = storage.GetStorageForDirectory(@"files");
+
+            watcher = new FileSystemWatcher();
+            watcher.IncludeSubdirectories = true;
+            watcher.Changed += WatcherOnChanged;
+            watcher.Created += WatcherOnChanged;
+            watcher.Deleted += WatcherOnChanged;
+            //TODO: handle renamed files
         }
 
         /// <summary>
@@ -33,16 +41,10 @@ namespace osu.Game.Database
         /// <param name="item">The beatmap to export.</param>
         public void Export(WorkingBeatmap item)
         {
-            string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
+            string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
-            Storage storage = tempStorage.GetStorageForDirectory(filename);
-
-            watcher = new FileSystemWatcher(storage.GetFullPath(string.Empty));
-            watcher.IncludeSubdirectories = true;
-            watcher.Changed += WatcherOnChanged;
-            watcher.Created += WatcherOnChanged;
-            watcher.Deleted += WatcherOnChanged;
-            //TODO: handle renamed files
+            Storage storage = tempStorage.GetStorageForDirectory(path);
+            watcher.Path = storage.GetFullPath(string.Empty);
 
             // Export files
             foreach (var f in item.BeatmapSetInfo.Files)
@@ -72,15 +74,31 @@ namespace osu.Game.Database
         {
             string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
+            Storage storage = tempStorage.GetStorageForDirectory(path);
+
             foreach (var file in filesToRefresh)
             {
-                //TODO: reimport changed files
+                if (storage.Exists(file))
+                {
+                    if (item.BeatmapSetInfo.Files.Any(x => x.Filename.Equals(file)))
+                    {
+                        // The file isn't new
+                    }
+                    else
+                    {
+                        // The file is newly created
+                    }
+                }
+                else
+                {
+                    // The file has been deleted
+                }
             }
         }
 
         public void Dispose()
         {
-            watcher?.Dispose();
+            watcher.Dispose();
             tempStorage.DeleteDirectory(string.Empty);
         }
     }
