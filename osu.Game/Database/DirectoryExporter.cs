@@ -29,7 +29,6 @@ namespace osu.Game.Database
 
             foreach (var f in item.Files)
             {
-                Console.WriteLine(f.Filename);
                 using Stream s = storage.CreateFileSafely(f.Filename);
                 UserFileStorage.GetStream(f.File.GetStoragePath()).CopyTo(s);
             }
@@ -39,14 +38,24 @@ namespace osu.Game.Database
 
         public void Import(BeatmapSetInfo item)
         {
-            string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
+            string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
-            foreach (var f in tempStorage.GetFiles(filename))
+            importFilesFromDir(item, path);
+        }
+
+        void importFilesFromDir(BeatmapSetInfo item, string path)
+        {
+            foreach (var f in tempStorage.GetFiles(path))
             {
                 using Stream s = tempStorage.GetStream(f);
 
                 using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(f), true), FileAccess.Write);
                 s.CopyTo(ns);
+            }
+
+            foreach (var d in tempStorage.GetDirectories(path))
+            {
+                importFilesFromDir(item, path);
             }
         }
     }
