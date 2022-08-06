@@ -1,7 +1,6 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using System;
 using System.IO;
 using osu.Framework.Platform;
 using osu.Game.Beatmaps;
@@ -21,26 +20,33 @@ namespace osu.Game.Database
             UserFileStorage = storage.GetStorageForDirectory(@"files");
         }
 
-        public void Export(BeatmapSetInfo item)
+        public void Export(IBeatmap item)
         {
             string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
             Storage storage = tempStorage.GetStorageForDirectory(filename);
 
-            foreach (var f in item.Files)
-            {
-                using Stream s = storage.CreateFileSafely(f.Filename);
-                UserFileStorage.GetStream(f.File.GetStoragePath()).CopyTo(s);
-            }
+            // Export .osu file
+            Stream s = storage.CreateFileSafely(item.GetDisplayString().GetValidArchiveContentFilename() + ".osu");
+            UserFileStorage.GetStream(item.BeatmapInfo.File?.File.GetStoragePath()).CopyTo(s);
+
+            // Export storyboard file
 
             storage.PresentExternally();
         }
 
-        public void Import(BeatmapSetInfo item)
+        public void Delete()
+        {
+            tempStorage.DeleteDirectory(string.Empty);
+        }
+
+        public void Reimport(BeatmapSetInfo item)
         {
             string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
-            importFilesFromDir(item, tempStorage.GetStorageForDirectory(path));
+            //importFilesFromDir(item, tempStorage.GetStorageForDirectory(path));
+
+            Delete();
         }
 
         private void importFilesFromDir(BeatmapSetInfo item, Storage storage)
