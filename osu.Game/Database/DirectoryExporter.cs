@@ -44,7 +44,8 @@ namespace osu.Game.Database
             foreach (var f in tempStorage.GetFiles(filename))
             {
                 using Stream s = tempStorage.GetStream(f);
-                using Stream ns = File.OpenWrite(UserFileStorage.GetFullPath(item.GetPathForFile(f), true));
+
+                using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(f), true), FileAccess.Write);
                 s.CopyTo(ns);
             }
         }
