@@ -896,11 +896,11 @@ namespace osu.Game.Screens.Edit
 
             dialogOverlay.Push(new ManualBeatmapChangesDialog(() =>
             {
-                ex.Delete();
+                ex.Dispose();
             }, () =>
             {
                 ex.Reimport(Beatmap.Value);
-                ex.Delete();
+                ex.Dispose();
             }));
         }
 
