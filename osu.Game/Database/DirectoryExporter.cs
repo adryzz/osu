@@ -40,22 +40,22 @@ namespace osu.Game.Database
         {
             string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
-            importFilesFromDir(item, path);
+            importFilesFromDir(item, tempStorage.GetStorageForDirectory(path));
         }
 
-        private void importFilesFromDir(BeatmapSetInfo item, string path)
+        private void importFilesFromDir(BeatmapSetInfo item, Storage storage)
         {
-            foreach (var f in tempStorage.GetFiles(path))
+            foreach (var f in storage.GetFiles(string.Empty))
             {
-                using Stream s = tempStorage.GetStream(f);
+                using Stream s = storage.GetStream(f);
 
-                using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(Path.GetFileName(f)), true), FileAccess.Write);
+                using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(f), true), FileAccess.Write);
                 s.CopyTo(ns);
             }
 
-            foreach (var d in tempStorage.GetDirectories(path))
+            foreach (var d in storage.GetDirectories(string.Empty))
             {
-                importFilesFromDir(item, path);
+                importFilesFromDir(item, storage.GetStorageForDirectory(d));
             }
         }
     }
