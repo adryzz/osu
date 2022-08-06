@@ -864,14 +864,14 @@ namespace osu.Game.Screens.Edit
             Save();
             var ex = new DirectoryBeatmapExporter(storage);
 
-            ex.Export(Beatmap.Value.Beatmap);
+            ex.Export(Beatmap.Value);
 
             dialogOverlay.Push(new ManualBeatmapChangesDialog(() =>
             {
                 ex.Delete();
             }, () =>
             {
-                ex.Reimport(Beatmap.Value.BeatmapSetInfo);
+                ex.Reimport(Beatmap.Value);
                 ex.Delete();
                 //Save();
             }));

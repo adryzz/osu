@@ -24,7 +24,7 @@ namespace osu.Game.Database
         /// Exports a beatmap (.osu and storyboard) to a temporary directory on disk and allows for manual editing of the files.
         /// </summary>
         /// <param name="item">The beatmap to export.</param>
-        public void Export(IBeatmap item)
+        public void Export(WorkingBeatmap item)
         {
             string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
@@ -51,7 +51,7 @@ namespace osu.Game.Database
         /// Re-imports a beatmap (.osu and storyboard) from the temporary directory after it has been manually edited.
         /// </summary>
         /// <param name="item">The bearmap to re-import</param>
-        public void Reimport(IBeatmap item)
+        public void Reimport(WorkingBeatmap item)
         {
             string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
