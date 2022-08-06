@@ -43,7 +43,7 @@ namespace osu.Game.Database
             importFilesFromDir(item, path);
         }
 
-        void importFilesFromDir(BeatmapSetInfo item, string path)
+        private void importFilesFromDir(BeatmapSetInfo item, string path)
         {
             foreach (var f in tempStorage.GetFiles(path))
             {
