@@ -49,7 +49,7 @@ namespace osu.Game.Database
             {
                 using Stream s = tempStorage.GetStream(f);
 
-                using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(f), true), FileAccess.Write);
+                using Stream ns = UserFileStorage.GetStream(UserFileStorage.GetFullPath(item.GetPathForFile(Path.GetFileName(f)), true), FileAccess.Write);
                 s.CopyTo(ns);
             }
 

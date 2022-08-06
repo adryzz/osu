@@ -869,7 +869,7 @@ namespace osu.Game.Screens.Edit
             dialogOverlay.Push(new ManualBeatmapChangesDialog(() => { }, () =>
             {
                 ex.Import(Beatmap.Value.BeatmapSetInfo);
-                Save();
+                //Save();
             }));
         }
 
