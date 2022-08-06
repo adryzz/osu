@@ -20,6 +20,10 @@ namespace osu.Game.Database
             UserFileStorage = storage.GetStorageForDirectory(@"files");
         }
 
+        /// <summary>
+        /// Exports a beatmap (.osu and storyboard) to a temporary directory on disk and allows for manual editing of the files.
+        /// </summary>
+        /// <param name="item">The beatmap to export.</param>
         public void Export(IBeatmap item)
         {
             string filename = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
@@ -35,18 +39,23 @@ namespace osu.Game.Database
             storage.PresentExternally();
         }
 
+        /// <summary>
+        /// Deletes the temporary directory from disk.
+        /// </summary>
         public void Delete()
         {
             tempStorage.DeleteDirectory(string.Empty);
         }
 
-        public void Reimport(BeatmapSetInfo item)
+        /// <summary>
+        /// Re-imports a beatmap (.osu and storyboard) from the temporary directory after it has been manually edited.
+        /// </summary>
+        /// <param name="item">The bearmap to re-import</param>
+        public void Reimport(IBeatmap item)
         {
             string path = $"{item.GetDisplayString().GetValidArchiveContentFilename()}";
 
             //importFilesFromDir(item, tempStorage.GetStorageForDirectory(path));
-
-            Delete();
         }
 
         private void importFilesFromDir(BeatmapSetInfo item, Storage storage)

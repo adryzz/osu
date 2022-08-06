@@ -872,6 +872,7 @@ namespace osu.Game.Screens.Edit
             }, () =>
             {
                 ex.Reimport(Beatmap.Value.BeatmapSetInfo);
+                ex.Delete();
                 //Save();
             }));
         }
