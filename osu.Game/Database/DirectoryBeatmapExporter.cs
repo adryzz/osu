@@ -9,6 +9,7 @@ using osu.Framework.Extensions.EnumExtensions;
 using osu.Framework.Platform;
 using osu.Game.Beatmaps;
 using osu.Game.Extensions;
+using osu.Game.Models;
 
 namespace osu.Game.Database
 {
@@ -22,7 +23,9 @@ namespace osu.Game.Database
 
         private readonly List<string> filesToRefresh = new List<string>();
 
-        public DirectoryBeatmapExporter(Storage storage)
+        private readonly BeatmapManager manager;
+
+        public DirectoryBeatmapExporter(Storage storage, BeatmapManager man)
         {
             tempStorage = storage.GetStorageForDirectory(@"temp");
             UserFileStorage = storage.GetStorageForDirectory(@"files");
@@ -32,6 +35,8 @@ namespace osu.Game.Database
             watcher.Changed += WatcherOnChanged;
             watcher.Created += WatcherOnChanged;
             watcher.Deleted += WatcherOnChanged;
+
+            manager = man;
             //TODO: handle renamed files
         }
 
@@ -76,22 +81,33 @@ namespace osu.Game.Database
 
             Storage storage = tempStorage.GetStorageForDirectory(path);
 
-            foreach (var file in filesToRefresh)
+            foreach (string file in filesToRefresh)
             {
-                if (storage.Exists(file))
+                RealmNamedFileUsage f = item.BeatmapSetInfo.Files.First(x => file == x.Filename);
+
+                if (item.BeatmapSetInfo.Files.Any(x => x.Filename.Equals(file)))
                 {
-                    if (item.BeatmapSetInfo.Files.Any(x => x.Filename.Equals(file)))
+                    if (storage.Exists(file))
                     {
-                        // The file isn't new
+                        // The file changed
+                        using (Stream s = storage.GetStream(file))
+                        {
+                            manager.ReplaceFile(item.BeatmapSetInfo, f, s);
+                        }
                     }
                     else
                     {
-                        // The file is newly created
+                        manager.DeleteFile(item.BeatmapSetInfo, f);
+                        // The file got deleted
                     }
                 }
                 else
                 {
-                    // The file has been deleted
+                    using (Stream s = storage.GetStream(file))
+                    {
+                        manager.AddFile(item.BeatmapSetInfo, s, file);
+                    }
+                    // The file is newly created
                 }
             }
         }
