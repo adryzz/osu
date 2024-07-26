@@ -118,7 +118,7 @@ namespace osu.Game.Input.Bindings
                 };
 
                 if (OperatingSystem.IsWindows())
-                    bindings.Append(new KeyBinding(InputKey.Insert, GlobalAction.BossKey));
+                    return bindings.Append(new KeyBinding(InputKey.Insert, GlobalAction.BossKey));
 
                 return bindings;
             }
